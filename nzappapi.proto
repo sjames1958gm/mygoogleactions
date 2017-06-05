@@ -1,0 +1,297 @@
+package nzappapi;
+option optimize_for = LITE_RUNTIME;
+option java_package = "com.netzyn.api.nzappapi";
+option java_outer_classname = "nzappapi";
+
+// NOTE: all fields must start with uppercase for java integration
+
+// These first messages are for "manager" app that launches other apps.
+
+message AppLaunch {
+  required string Url = 1;
+  required uint32 X = 2;
+  required uint32 Y = 3;
+  required uint32 Width = 4;
+  required uint32 Height = 5;
+  required uint32 VideoWidth = 6;
+  required uint32 VideoHeight = 7;
+  required uint32 ZOrder = 8;
+  required uint32 Flags = 9;
+  required uint32 FlagsEx = 10;
+  required uint32 Opaque = 11;
+}
+
+message AppLaunchResp {
+  required uint32 AppId = 1;
+  required string AppOid = 2;
+}
+
+message AppLaunchFailed {
+  required string Url = 1;
+  required uint32 Reason = 2;
+}
+
+message AppUpdate {
+  required uint32 AppId = 1;
+  required uint32 X = 2;
+  required uint32 Y = 3;
+  required uint32 Width = 4;
+  required uint32 Height = 5;
+  required uint32 VideoWidth = 6;
+  required uint32 VideoHeight = 7;
+  required uint32 ZOrder = 8;
+}
+
+message AppActivate {
+  required uint32 AppId = 1;
+}
+
+message AppVisibilityChanged {
+ required uint32 AppId = 1;
+ required bool Visible = 2;
+}
+
+message AppClose {
+  required uint32 AppId = 1;
+}
+
+message AppKey {
+  required uint32 AppId = 1;
+  required uint32 Op = 2;
+  required uint32 Key = 3; 
+  required uint32 Flags = 4;
+}
+
+// These messages are for Apps controlling their own execution.
+// Use case is javascript running in a browser.
+message AppVisible {
+}
+
+message AppShutdown {
+}
+
+// These messages are for Apps that wish to send raw data.
+
+// AppRegisterOid is required if first raw message is toward App
+// AppSendRawMessage will register as well as send.
+message AppRegisterOid {
+  required string AppOid = 1;
+}
+
+// This message will release resources from registration
+message AppReleaseOid {
+  required string AppOid = 1;
+}
+
+// Destination is 0 for device, 1 for manager
+message AppSendRawMessage {
+  required uint32 Destination = 1;
+  required string AppOid = 2;
+  required uint32 Parm = 3;
+  required string Data = 4;
+}
+
+// Source is 0 for device, 1 for manager
+message AppRcvRawMessage {
+  required uint32 Source = 1;
+  required string AppOid = 2;
+  required uint32 Parm = 3;
+  required string Data = 4;
+}
+
+message RegisterEvents {
+  required uint32 AppId = 1;
+  required bool SendKeyboard = 2;
+  required bool SendMouse = 3;
+  required bool SendTouch = 4;
+  required bool SendLocation = 5;
+}
+
+message AppTouch {
+  required uint32 TouchId = 1;
+  required uint32 Flags = 2;
+  required uint32 Op = 3;
+  required uint32 FingerId = 4;
+  required uint32 X = 5;
+  required uint32 Y = 6;
+  required double Pressure = 7;
+  required uint32 TapFingers = 8;
+}
+
+message AppLocation {
+  required uint32 LocatorId = 1;
+  required uint32 Flags = 2;
+  required double Latitude = 3;
+  required double Longitude = 4;
+  required double Altitude = 5;
+  required double Accuracy = 6; 
+  required double Bearing = 7; 
+  required double Speed = 8;
+}
+
+// Change to separate messages for audio/video?
+message AppMediaInit {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+}
+
+message AppMediaUrl {
+  required uint32 Type = 1;
+  required uint32 Flags = 2;
+  required double FrameRate = 3;
+  required uint64 Timestamp = 4;
+  required string Correlation = 5;
+  required string Url = 6;
+}
+
+message AppMediaReport {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+  required uint64 Duration = 3;
+  required uint64 QueueSize = 4;
+  required uint64 QueueSizeCurrent = 5;
+  required uint64 Position = 6;
+  required double Bandwidth = 7;
+}
+
+message AppUrlReport {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+  required uint64 Duration = 3;
+}
+
+// These are not used so far
+message AppMediaClose {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+}
+
+message AppMediaPlay {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+}
+
+message AppMediaPause {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+}
+
+message AppMediaSeek {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+  required uint64 Timestamp = 3;
+}
+
+message AppMediaSetQueueSize {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+  required uint64 QueueSize = 3;
+  required uint64 UpdateInterval = 4;
+}
+
+message AppMediaSetVolume {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+  required uint32 Volume = 3;
+}
+
+message AppMediaEndOfStream {
+  required uint32 Type = 1;
+  required string Correlation = 2;
+  required bool PlayComplete = 3;
+}
+
+message AppConfigRequest {
+}
+
+message AppConfigResponse {
+  required string Config = 1;
+}
+
+message AppGetUserProperty  
+{   
+    required string Key         = 1;        
+}
+
+message AppGetUserPropertyResponse   
+{
+    required string Key         = 1;        
+    required string Value       = 2;        
+}
+
+message AppGetInfo  
+{
+}
+
+message AppGetInfoResponse  
+{
+    required uint32 XOffset     = 1;
+    required uint32 YOffset     = 2;
+    required uint32 Width       = 3; 
+    required uint32 Height      = 4;
+    required uint32 ZOrder      = 5;
+    required uint32 Flags       = 6;
+}
+
+message AppMediaStreamCreate
+{
+    required string Correlation = 1;
+    required string Url         = 2;
+    required uint32 XOffset     = 3;
+    required uint32 YOffset     = 4;
+    required uint32 Width       = 5; 
+    required uint32 Height      = 6;
+    required uint32 ZOrder      = 7;
+    required bool   Controls    = 8;
+}
+
+message AppMediaStreamUpdate
+{
+    required string Correlation = 1;
+    required uint32 XOffset     = 2;
+    required uint32 YOffset     = 3;
+    required uint32 Width       = 4; 
+    required uint32 Height      = 5;
+    required uint32 ZOrder      = 6;
+}
+
+message AppMediaStreamVolume
+{
+    required string Correlation = 1;
+    required uint32 Volume      = 2;
+}
+
+message AppSendMarker
+{
+    required string Message     = 1;
+    required uint32 Error       = 2;
+    required uint32 Command     = 3;
+}
+
+message AppCommandReq
+{
+    required string User = 1;
+    required string App = 2;
+    required string SessionId = 3;
+    required string Intent = 4;
+    required string Parm1 = 5;
+    required string Parm2 = 6;
+    required string Parm3 = 7;
+    required string Parm4 = 8;
+    required string Parm5 = 9;
+}
+
+message AppCommandResp
+{
+    // 0 - success
+    // 1 - invalid user
+    // 2 - user not active on device
+    // 3 - app not active
+    // 4 - unknown app
+    // 5 - unknown device
+    // 6 - general failure
+    required uint32 Status = 1;
+    required string SessionId = 2;
+    required string Response = 3;
+    required string Parm = 4;
+}
