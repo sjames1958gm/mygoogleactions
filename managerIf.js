@@ -20,13 +20,8 @@ module.exports.startClient = function() {
 
 };
 
-module.exports.checkConnection = function(emitter) {
-  console.log(`Connected: ${connected}`);
-  if (!connected) {
-    emitter.emit(":tell", "No connection to application manager");
-    return false;
-  }  
-  return true;
+module.exports.isConnected = function() {
+  return connected;
 };
 
 module.exports.command = function(user, app, sessionId, intent, ...rest) {

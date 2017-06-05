@@ -1,4 +1,4 @@
-process.env.DEBUG = 'actions-on-google:*';
+// process.env.DEBUG = 'actions-on-google:*';
 
 let express = require('express');
 let bodyParser = require('body-parser');
@@ -9,10 +9,18 @@ app.use(bodyParser.json({type: 'application/json'}));
 
 require('dotenv').config();
 
-var { startClient } = require('./managerIf');
-const { command, checkConnection } = require('./managerIf');
+const { startClient } = require('./managerIf');
+const { command, isConnected } = require('./managerIf');
 
 startClient()
+
+function checkConnection(assistant) {
+    if (!isConnected()) {
+        assistant.tell("No connection to application manager");
+        return false;
+    }
+    return true;
+}
 
 const Assistant = require('actions-on-google').ApiAiApp;
 
@@ -23,14 +31,33 @@ app.post('/presentations', function (request, response) {
 
     function close(assistant) {
         console.log("close");
-        assistant.tell("Closed");
+        if (!checkConnection(this)) return;
+
+        let { sessionId, result, originalRequest } = request.body;
+        console.log("show: " + JSON.stringify(request.body));
+        let user = originalRequest ? originalRequest.data.user.userId : "testuser";
+
+        command(user, appName, sessionId, result.action.toLowerCase(), 
+            appName, function(status, sessionId, response, parm) {
+                switch (status) {
+                    case 0:
+                        assistant.tell(`Closed`);
+                    break;
+                    case 1:
+                        this.ask(`I don't recognize your identity, what is your username?`);
+                    break;
+                    default:
+                        this.tell('Failed to close app');
+                }
+            
+            }.bind(this)); 
     }
 
     function show(assistant) {
         console.log("show");
+        if (!checkConnection(this)) return;
 
         let { sessionId, result, originalRequest } = request.body;
-        console.log("show: " + JSON.stringify(request.body));
         let user = originalRequest ? originalRequest.data.user.userId : "testuser";
 
         let document = result.parameters.Document;
@@ -59,6 +86,7 @@ app.post('/presentations', function (request, response) {
 
     function go(assistant) {
         console.log("go");
+        if (!checkConnection(this)) return;
 
         // console.log(request.body.originalRequest.data.user.userId);
         let { sessionId, result, originalRequest } = request.body;
@@ -84,6 +112,7 @@ app.post('/presentations', function (request, response) {
     
     function move(assistant) {
         console.log("show");
+        if (!checkConnection(this)) return;
 
         let { sessionId, result, originalRequest } = request.body;
         let user = originalRequest ? originalRequest.data.user.userId : "testuser";
@@ -108,6 +137,7 @@ app.post('/presentations', function (request, response) {
 
     function identify(assistant) {
         console.log("identify");
+        if (!checkConnection(this)) return;
         
         // console.log(request.body.sessionId);
         let { sessionId, result, originalRequest } = request.body;
@@ -137,6 +167,7 @@ app.post('/presentations', function (request, response) {
     actionMap.set('show', show);
     actionMap.set('identify', identify);
     actionMap.set('go', go);
+    actionMap.set('move', move);
     assistant.handleRequest(actionMap);
 })
 ;

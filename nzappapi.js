@@ -102,6 +102,7 @@
         });
   
         let size = 0;
+        let save;
         socket.on("data", function (buffer) {
           try {
             // console.log("ondata");
