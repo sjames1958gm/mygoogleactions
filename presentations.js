@@ -14,7 +14,7 @@ module.exports = function (request, response, checkConnection) {
         let { sessionId, result, originalRequest } = request.body;
         let user = originalRequest ? originalRequest.data.user.userId : "testuser";
 
-        command(user, appName, sessionId, result.action.toLowerCase(), 
+        command(user, "", appName, sessionId, result.action.toLowerCase(), 
             appName, function(status, sessionId, response, parm) {
                 switch (status) {
                     case 0:
@@ -45,8 +45,8 @@ module.exports = function (request, response, checkConnection) {
             document = "all";
         }
 
-        command(user, appName, sessionId, result.action.toLowerCase(), 
-            document, device.toLowerCase(), function(status, sessionId, response, parm) {
+        command(user, device.toLowerCase(), appName, sessionId, result.action.toLowerCase(), 
+            document, function(status, sessionId, response, parm) {
                 switch (status) {
                     case 0:
                         assistant.ask("Ok");
@@ -71,7 +71,7 @@ module.exports = function (request, response, checkConnection) {
 
         let direction = result.parameters.Direction;
         
-        command(user, appName, sessionId, result.action.toLowerCase(), 
+        command(user, "", appName, sessionId, result.action.toLowerCase(), 
             direction, function(status, sessionId, response, parm) {
                 switch (status) {
                     case 0:
@@ -96,8 +96,8 @@ module.exports = function (request, response, checkConnection) {
 
         let device = result.parameters.Device;
 
-        command(user, appName, sessionId, result.action.toLowerCase(), 
-            "", device.toLowerCase(), function(status, sessionId, response, parm) {
+        command(user, device.toLowerCase(), appName, sessionId, result.action.toLowerCase(), 
+            "", function(status, sessionId, response, parm) {
                 switch (status) {
                     case 0:
                         assistant.ask("Ok");
@@ -122,7 +122,7 @@ module.exports = function (request, response, checkConnection) {
 
         let username = result.parameters.User;
         
-        command(user, appName, sessionId, result.action.toLowerCase(), 
+        command(user, "", appName, sessionId, result.action.toLowerCase(), 
             username, function(status, sessionId, response, parm) {
                 switch (status) {
                     case 0:
@@ -147,7 +147,7 @@ module.exports = function (request, response, checkConnection) {
         let { sessionId, result, originalRequest } = request.body;
         let user = originalRequest ? originalRequest.data.user.userId : "testuser";
 
-        command(user, appName, sessionId, 'Launch'.toLowerCase(), 
+        command(user, "", appName, sessionId, 'Launch'.toLowerCase(), 
             function(status, sessionId, response, parm) {
                 switch (status) {
                     case 0:

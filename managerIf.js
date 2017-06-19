@@ -24,13 +24,13 @@ module.exports.isConnected = function() {
   return connected;
 };
 
-module.exports.command = function(user, app, sessionId, intent, ...rest) {
+module.exports.command = function(user, device, app, sessionId, intent, ...rest) {
   let cb;
   if (rest.length > 0 && typeof rest[rest.length - 1] === "function") {
     cb = rest.pop();
   }
 
-  nzappapi.AppCommandReq(user, app, sessionId, intent, 
+  nzappapi.AppCommandReq(user, device, app, sessionId, intent, 
     rest[0] || "", rest[1] || "", rest[2] || "", rest[3] || "", rest[4] || "");
     
   if (cb) {

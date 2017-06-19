@@ -271,27 +271,30 @@ message AppSendMarker
 message AppCommandReq
 {
     required string User = 1;
-    required string App = 2;
-    required string SessionId = 3;
-    required string Intent = 4;
-    required string Parm1 = 5;
-    required string Parm2 = 6;
-    required string Parm3 = 7;
-    required string Parm4 = 8;
-    required string Parm5 = 9;
+    required string Device = 2;
+    required string App = 3;
+    required string SessionId = 4;
+    required string Intent = 5;
+    required string Parm1 = 6;
+    required string Parm2 = 7;
+    required string Parm3 = 8;
+    required string Parm4 = 9;
+    required string Parm5 = 10;
 }
 
 message AppCommandResp
 {
     // 0 - success
-    // 1 - invalid user
-    // 2 - user not active on device
-    // 3 - app not active
-    // 4 - unknown app
-    // 5 - unknown device
-    // 6 - general failure
+    // 1 - reprompt user
+    // 2 - reprompt device
+    // 3 - general failure
     required uint32 Status = 1;
     required string SessionId = 2;
     required string Response = 3;
     required string Parm = 4;
+}
+
+message AppCommandReg
+{
+    required string AppName = 1;
 }

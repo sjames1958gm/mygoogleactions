@@ -102,7 +102,6 @@
         });
   
         let size = 0;
-        let save;
         socket.on("data", function (buffer) {
           try {
             // console.log("ondata");
@@ -114,7 +113,6 @@
                 // console.log("Full buffer");
                 processRpc(socket, size, buffer);
                 size = 0;
-                save = undefined;
               }
             }
             else {
