@@ -21,8 +21,6 @@ function checkConnection(assistant) {
     return true;
 }
 
-const presentations = require('./presentations');
-const telegram = require('./telegram');
 const nzos = require('./nzos');
 
 app.post('/presentations',  function (request, response) {
@@ -39,6 +37,10 @@ app.post('/nzos', function (request, response) {
 
 app.post('/latency', function (request, response) {
     nzos(request, response, checkConnection, "latency");
+});
+
+app.post('/video', function (request, response) {
+    nzos(request, response, checkConnection, "video");
 });
 
 let server = app.listen(process.env.PORT || 8080, function () {
