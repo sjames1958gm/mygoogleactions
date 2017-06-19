@@ -1,5 +1,9 @@
 const Assistant = require('actions-on-google').ApiAiApp;
 
+// -----------------
+// No longer used - requests forwarded to generic nzos.js
+// -----------------
+
 const { command } = require('./managerIf');
 
 module.exports = function (request, response, checkConnection) {
