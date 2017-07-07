@@ -1,5 +1,8 @@
 const Assistant = require('actions-on-google').ApiAiApp;
 
+const AWS = require('aws-sdk');
+const s3 = new AWS.S3();
+
 const {
   command
 } = require('./managerIf');
@@ -27,10 +30,13 @@ module.exports = function(request, response, checkConnection, appName) {
     request,
     response
   });
+  
+  
+  console.log(`AppName: ${appName}`);
 
   function launch(assistant) {
     console.log("launch");
-    if (!checkConnection(this)) return;
+    if (!checkConnection(assistant)) return;
 
     let {
       sessionId,
@@ -57,7 +63,7 @@ module.exports = function(request, response, checkConnection, appName) {
             emitResponse(assistant, response, "ask", parm, `Please specify the target device?`);
             break;
           default:
-            emitResponse(this, response, "tell", parm, 'Failed to launch app');
+            emitResponse(assistant, response, "tell", parm, 'Failed to launch app');
         }
 
       }.bind(this));
@@ -65,7 +71,7 @@ module.exports = function(request, response, checkConnection, appName) {
 
   function move(assistant) {
     console.log("show");
-    if (!checkConnection(this)) return;
+    if (!checkConnection(assistant)) return;
 
     let {
       sessionId,
@@ -95,7 +101,7 @@ module.exports = function(request, response, checkConnection, appName) {
 
   function close(assistant) {
     console.log("close");
-    if (!checkConnection(this)) return;
+    if (!checkConnection(assistant)) return;
 
     let {
       sessionId,
@@ -127,7 +133,7 @@ module.exports = function(request, response, checkConnection, appName) {
 
   function identify(assistant) {
     console.log("identify");
-    if (!checkConnection(this)) return;
+    if (!checkConnection(assistant)) return;
 
     // console.log(request.body.sessionId);
     let {
@@ -158,7 +164,7 @@ module.exports = function(request, response, checkConnection, appName) {
   }
   
   function unhandled(assistant) {
-    if (!checkConnection(this)) return;
+    if (!checkConnection(assistant)) return;
 
     // console.log(request.body.sessionId);
     let {
@@ -206,21 +212,53 @@ module.exports = function(request, response, checkConnection, appName) {
 
       }.bind(this));
   }
+  
+  function start(request) {
+    let action = request.body.result.action;
+    let parms = request.body.result.parameters;
+    console.log(`Action: ${action}`);
+    console.log(`Parms: ${JSON.stringify(parms)}`);
 
-  let action = request.body.result.action;
-  let parms = request.body.result.parameters;
-  console.log(`Action: ${action}`);
-  console.log(`Parms: ${JSON.stringify(parms)}`);
-
-  const actionMap = new Map();
-  actionMap.set('close', close);
-  actionMap.set('identify', identify);
-  actionMap.set('move', move);
-  actionMap.set('launch', launch);
-
-  if (action !== "input.welcome" && !actionMap.get(action)) {
-    actionMap.set(action, unhandled);
+    const actionMap = new Map();
+    actionMap.set('close', close);
+    actionMap.set('identify', identify);
+    actionMap.set('move', move);
+    actionMap.set('launch', launch);
+  
+    if (action !== "input.welcome" && !actionMap.get(action)) {
+      actionMap.set(action, unhandled);
+    }
+  
+    assistant.handleRequest(actionMap);
   }
 
-  assistant.handleRequest(actionMap);
+
+  if (appName) {
+    let params = {
+      Bucket: "AlexaApps",
+      Key: appName
+    };
+  
+    s3.getObject(params, function(err, data) {
+      if (err) {
+        console.log(`Error from S3: ${err}`);
+        assistant.tell('Application is not available');
+        return ;
+      }
+      
+      console.log(data.Body.toString('utf8'));
+      var appData = JSON.parse(data.Body.toString('utf8'));
+      console.log(appData);
+
+      appName = appData.appName;
+      start(request);
+      
+    });
+
+  }
+  else {
+    start(request);
+  }
 };
+
+

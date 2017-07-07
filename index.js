@@ -23,25 +23,26 @@ function checkConnection(assistant) {
 
 const nzos = require('./nzos');
 
-app.post('/presentations',  function (request, response) {
-    nzos(request, response, checkConnection, "presentations");
-});
+// app.post('/presentations',  function (request, response) {
+//     nzos(request, response, checkConnection, "presentations");
+// });
 
-app.post('/telegram', function (request, response) {
-    nzos(request, response, checkConnection, "telegram");
-});
+// app.post('/telegram', function (request, response) {
+//     nzos(request, response, checkConnection, "telegram");
+// });
 
 app.post('/nzos', function (request, response) {
     nzos(request, response, checkConnection);
 });
 
-app.post('/latency', function (request, response) {
-    nzos(request, response, checkConnection, "latency");
+app.post('/:app', function (request, response) {
+    // console.log(request);
+    nzos(request, response, checkConnection, request.params.app);
 });
 
-app.post('/video', function (request, response) {
-    nzos(request, response, checkConnection, "video");
-});
+// app.post('/video', function (request, response) {
+//     nzos(request, response, checkConnection, "video");
+// });
 
 let server = app.listen(process.env.PORT || 8080, function () {
     let port = server.address().port;
